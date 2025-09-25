@@ -1,6 +1,11 @@
 services:
   traefik:
+    env_file:
+      - stack.env
     image: traefik:v3.5
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     ports:
       - "80:80"
       - "443:443"
@@ -11,25 +16,6 @@ services:
     networks:
       evilnet:
         ipv4_address: 172.200.1.2
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
-      - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.websecure.http.tls=true"
-
-      - "--providers.file.filename=/dynamic/tls.yaml"
-
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=evilnet"
-
-      - "--api.dashboard=true"
-      - "--api.insecure=false"
-
     labels:
       - "traefik.enable=true"
 
