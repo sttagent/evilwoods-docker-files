@@ -1,7 +1,5 @@
 services:
   traefik:
-    env_file:
-      - stack.env
     image: traefik:v3.5
     restart: unless-stopped
     security_opt:
@@ -13,6 +11,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /mnt/storage/containers/service-data/traefik/volumes/certs:/certs:ro
       - /mnt/storage/containers/service-data/traefik/volumes/dynamic:/dynamic:ro
+      - /mnt/storage/containers/service-data/traefik/volumes/config:/etc/traefik
     networks:
       evilnet:
         ipv4_address: 172.200.1.2
