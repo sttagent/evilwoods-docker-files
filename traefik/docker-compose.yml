@@ -1,6 +1,6 @@
 services:
   traefik:
-    env_file
+    env_file:
       - stack.env
     image: traefik:v3.5
     restart: unless-stopped
