@@ -6,7 +6,7 @@ services:
       - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /mnt/storage/containers/service-data/traefik/volumes/certs:/cers:ro
+      - /mnt/storage/containers/service-data/traefik/volumes/certs:/certs:ro
       - /mnt/storage/containers/service-data/traefik/volumes/dynamic:/dynamic:ro
     networks:
       evilnet:
