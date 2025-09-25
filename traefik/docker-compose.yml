@@ -1,19 +1,45 @@
 services:
   traefik:
     image: traefik:v3.5
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.web.address=:443"
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /mnt/storage/containers/service-data/traefik/volumes/certs:/cers:ro
+      - /mnt/storage/containers/service-data/traefik/volumes/dynamic:/dynamic:ro
     networks:
       evilnet:
         ipv4_address: 172.200.1.2
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.tls=true"
+
+      - "--providers.file.filename=/dynamic/tls.yaml"
+
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=evilnet"
+
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.dashboard.rule=Host(`docker.evilwoods.local`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.tls=true"
+
+      - "traefik.http.middlewares.dashboard-auth.basicauth.users=admin:$$apr1$$FbVkfZiM$$54o3n2wsSMkRPSHIBdmHw."
+      - "traefik.http.routers.dashboard.middlewares=dashboard-auth@docker"
 
 networks:
   evilnet:
