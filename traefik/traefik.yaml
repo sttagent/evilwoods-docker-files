@@ -12,6 +12,17 @@ entryPoints:
     http:
       tls: {}
 
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: ""
+      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - 1.1.1.1:53
+          - 8.8.8.8:53
+
 providers:
   file:
     filename: "/dynamic/tls.yaml"
