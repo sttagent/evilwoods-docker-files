@@ -10,10 +10,10 @@ services:
     volumes:
       - /mnt/storage/containers/service-data/miniflux/volumes/secrets:/secrets:ro
     networks:
-      evilnet:
-        priority: 1000
-      miniflux:
-        priority: 100
+      - evilnet
+      - miniflux
+    extra_hosts:
+      - "id.evilwoods.net:host-gateway"
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=evilnet"
