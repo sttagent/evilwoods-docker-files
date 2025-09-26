@@ -1,0 +1,24 @@
+services:
+  obsidian-sync:
+    env_file:
+      - stack.env
+    image: couchdb:latest
+    container_name: evil-obsidian-sync-couchdb
+    user: 5984:5984
+    volumes:
+      - /mnt/storage/containers/service-data/obsidian-sync/volumes/data:/opt/couchdb/data
+      - /mnt/storage/containers/service-data/obsidian-sync/volumes/config:/opt/couchdb/etc/local.d
+    restart: unless-stopped
+    networks:
+      - evilnet
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=evilnet"
+      - "traefik.http.routers.obsidian-sync.rule=Host(`ols.evilwoods.net`)"
+      - "traefik.http.routers.obsidian-sync.entrypoints=websecure"
+      - "traefik.http.routers.obsidian-sync.tls.certresolver=letsencrypt"
+      - "traefik.http.services.obsidian-sync.loadbalancer.server.port=5984"
+
+networks:
+  evilnet:
+    external: true
