@@ -2,9 +2,9 @@ services:
   obsidian-sync:
     env_file:
       - stack.env
-    image: couchdb:latest
+    image: couchdb:latest:3
     container_name: evil-obsidian-sync
-    user: 1000:1000
+    user: 5984:5984
     volumes:
       - /mnt/storage/containers/service-data/obsidian-sync/volumes/data:/opt/couchdb/data
       - /mnt/storage/containers/service-data/obsidian-sync/volumes/config:/opt/couchdb/etc/local.d
