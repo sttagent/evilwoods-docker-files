@@ -1,0 +1,33 @@
+services:
+  ntfy:
+    image: binwiederhier/ntfy:v2
+    container_name: evilntfy
+    command:
+      - serve
+    environment:
+      - TZ=UTC # optional: set desired timezone
+    volumes:
+      - /mnt/storage/containers/service-data/ntfy/volumes/cache:/var/cache/ntfy
+      - /mnt/storage/containers/service-data/ntfy/volumes/config:/etc/ntfy
+    healthcheck: # optional: remember to adapt the host:port to your environment
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q --tries=1 http://localhost:80/v1/health -O - | grep -Eo '\"healthy\"\\s*:\\s*true' || exit 1",
+        ]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - evilnet
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=evilnet"
+      - "traefik.http.routers.ntfy.rule=Host(`ntfy.evilwoods.net`)"
+      - "traefik.http.routers.ntfy.entrypoints=websecure"
+      - "traefik.http.routers.ntfy.tls.certresolver=letsencrypt"
+networks:
+  evilnet:
+    external: true
