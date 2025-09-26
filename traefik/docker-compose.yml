@@ -14,13 +14,12 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /mnt/storage/containers/service-data/traefik/volumes/certs:/certs:ro
       - /mnt/storage/containers/service-data/traefik/volumes/dynamic:/dynamic:ro
-      - /mnt/storage/containers/service-data/traefik/volumes/config:/etc/traefik
+      - /mnt/storage/containers/service-data/traefik/volumes/secrets:/secrets:ro
     networks:
       evilnet:
         ipv4_address: 172.200.1.2
     labels:
       - "traefik.enable=true"
-
       - "traefik.http.routers.dashboard.rule=Host(`traefik.evilwoods.net`)"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.routers.dashboard.service=api@internal"
