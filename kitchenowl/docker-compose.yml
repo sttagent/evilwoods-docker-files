@@ -1,0 +1,34 @@
+services:
+  kitchenowl:
+    container_name: evil-kitchenowl
+    env_file:
+      - stack.env
+    image: tombursch/kitchenowl:latest
+    restart: unless-stopped
+    volumes:
+      - /mnt/storage/containers/service-data/kitchinowl/volumes/data:/data
+      - /mnt/storage/containers/service-data/kitchinowl/volumes/secrets:/secrets:ro
+    networks:
+      - evilnet
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=evilnet"
+      - "traefik.http.routers.kitchenowl.rule=Host(`kitchenowl.evilwoods.net`)"
+      - "traefik.http.routers.kitchenowl.entrypoints=websecure"
+      - "traefik.http.routers.kitchenowl.tls.certresolver=letsencrypt"
+      - "traefik.http.services.kitchenowl.loadbalancer.server.port=8080"
+      - "traefik.http.routers.kitchenowl.middlewares=kitchenowl-security"
+      - "traefik.http.middlewares.kitchenowl-security.headers.addvaryheader=true"
+      - "traefik.http.middlewares.kitchenowl-security.headers.sslredirect=true"
+      - "traefik.http.middlewares.kitchenowl-security.headers.browserxssfilter=true"
+      - "traefik.http.middlewares.kitchenowl-security.headers.contenttypenosniff=true"
+      - "traefik.http.middlewares.kitchenowl-security.headers.forcestsheader=true"
+      - "traefik.http.middlewares.kitchenowl-security.headers.stsincludesubdomains=true"
+      - "traefik.http.middlewares.kitchenowl-security.headers.stspreload=true"
+      - "traefik.http.middlewares.kitchenowl-security.headers.stsseconds=315363072000"
+      - "traefik.http.middlewares.kitchenowl-security.headers.customframeoptionsvalue=SAMEORIGIN"
+      - "traefik.http.middlewares.kitchenwol-security.headers.referrerpolicy=same-origin"
+
+networks:
+  evilnet:
+    external: true
