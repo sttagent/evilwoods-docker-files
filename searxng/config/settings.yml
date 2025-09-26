@@ -1,5 +1,6 @@
 use_default_settings: true
 server:
+  secret_key: secret
   base_url: https://search.evilwoods.net
   limiter: false
 redis:

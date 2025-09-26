@@ -29,6 +29,8 @@ services:
       - "traefik.http.middlewares.dashboard-auth.basicauth.users=admin:$$apr1$$FbVkfZiM$$54o3n2wsSMkRPSHIBdmHw."
       - "traefik.http.routers.dashboard.middlewares=dashboard-auth@docker"
 
+      - "traefik.http.routers.middleware.searxng_headers.headers.customresponseheaders.x-robots-tag='noidex, noarchive, nofollow'"
+
 networks:
   evilnet:
     external: true
