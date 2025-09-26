@@ -1,0 +1,43 @@
+services:
+  miniflux:
+    env_file:
+      - stack.env
+    image: miniflux/miniflux:latest
+    container_name: evil-miniflux
+    depends_on:
+      miniflux-db:
+        condition: service_healthy
+    volumes:
+      - /mnt/storage/containers/service-data/miniflux/volumes/secrets:/secrets:ro
+    networks:
+      - evilnet
+      - miniflux
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=evilnet"
+      - "traefik.http.routers.miniflux.rule=Host(`rss.evilwoods.net`)"
+      - "traefik.http.routers.miniflux.entrypoints=websecure"
+      - "traefik.http.routers.miniflux.tls.certresolver=letsencrypt"
+      - "traefik.http.services.miniflux.loadbalancer.server.port=8080"
+
+  miniflux-db:
+    image: postgres:18-alpine
+    container_name: evil-miniflux-db
+    environment:
+      - POSTGRES_USER=miniflux
+      - POSTGRES_PASSWORD=miniflux
+      - POSTGRES_DB=miniflux
+    volumes:
+      - /mnt/storage/containers/service-data/miniflux/volumes/data:/var/lib/postgresql/data
+    networks:
+      - miniflux
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "miniflux"]
+      interval: 10s
+      start_period: 30s
+
+networks:
+  miniflux:
+    internal: true
+  evilnet:
+    external: true
