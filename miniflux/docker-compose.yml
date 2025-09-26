@@ -40,4 +40,3 @@ networks:
   evilnet:
     external: true
   miniflux:
-    internal: true
