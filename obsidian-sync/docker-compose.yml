@@ -15,7 +15,6 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=evilnet"
       - "traefik.http.routers.obsidian-sync.rule=Host(`ols.evilwoods.net`)"
-      - "traefik.http.routers.obsidian-livesync.service=evil-obsidian-sync"
       - "traefik.http.routers.obsidian-sync.entrypoints=websecure"
       - "traefik.http.routers.obsidian-sync.tls.certresolver=letsencrypt"
       - "traefik.http.services.obsidian-sync.loadbalancer.server.port=5984"
