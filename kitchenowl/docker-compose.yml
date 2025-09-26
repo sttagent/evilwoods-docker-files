@@ -6,8 +6,8 @@ services:
     image: tombursch/kitchenowl:v0.7.4
     restart: unless-stopped
     volumes:
-      - /mnt/storage/containers/service-data/kitchinowl/volumes/data:/data
-      - /mnt/storage/containers/service-data/kitchinowl/volumes/secrets:/secrets:ro
+      - /mnt/storage/containers/service-data/kitchenowl/volumes/data:/data
+      - /mnt/storage/containers/service-data/kitchenowl/volumes/secrets:/secrets:ro
     networks:
       - evilnet
     labels:
