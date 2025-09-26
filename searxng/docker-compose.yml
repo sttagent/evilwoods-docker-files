@@ -38,6 +38,18 @@ services:
       - "traefik.http.routers.searxng.entrypoints=websecure"
       - "traefik.http.routers.searxng.tls.certresolver=letsencrypt"
       - "traefik.http.services.searxng.loadbalancer.server.port=8080"
+      - "traefik.http.routers.searxng.middlewares=searxng-headers,searxng-compress"
+
+      # Compression Middleware (equivalent to Caddy's encode zstd gzip)
+      - "traefik.http.middlewares.searxng-compress.compress=true"
+
+      # Security Headers Middleware (translating Caddy's header directives)
+      - "traefik.http.middlewares.searxng-headers.headers.customRequestHeaders.X-Forwarded-Proto=https"
+      - "traefik.http.middlewares.searxng-headers.headers.customResponseHeaders.Content-Security-Policy=upgrade-insecure-requests; default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; form-action 'self' https:; font-src 'self'; frame-ancestors 'self'; base-uri 'self'; connect-src 'self'; img-src * data:; frame-src https:;"
+      - "traefik.http.middlewares.searxng-headers.headers.customResponseHeaders.Permissions-Policy=accelerometer=(),camera=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),payment=(),usb=()"
+      - "traefik.http.middlewares.searxng-headers.headers.customResponseHeaders.Referrer-Policy=same-origin"
+      - "traefik.http.middlewares.searxng-headers.headers.customResponseHeaders.X-Content-Type-Options=nosniff"
+      - "traefik.http.middlewares.searxng-headers.headers.customResponseHeaders.X-Robots-Tag=noindex, nofollow, noarchive, nositelinkssearchbox, nosnippet, notranslate, noimageindex"
 
 networks:
   evilnet:
