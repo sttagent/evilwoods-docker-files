@@ -1,0 +1,6 @@
+use_default_settings: true
+server:
+  base_url: https://search.evilwoods.net
+  limiter: false
+redis:
+  url: redis://evil-searxng-valkey:6379/0
