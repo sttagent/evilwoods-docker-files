@@ -3,8 +3,8 @@ services:
     env_file:
       - stack.env
     image: couchdb:latest
-    container_name: evil-obsidian-sync-couchdb
-    user: 5984:5984
+    container_name: evil-obsidian-sync
+    user: 1000:1000
     volumes:
       - /mnt/storage/containers/service-data/obsidian-sync/volumes/data:/opt/couchdb/data
       - /mnt/storage/containers/service-data/obsidian-sync/volumes/config:/opt/couchdb/etc/local.d
@@ -15,9 +15,18 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=evilnet"
       - "traefik.http.routers.obsidian-sync.rule=Host(`ols.evilwoods.net`)"
+      - "traefik.http.routers.obsidian-livesync.service=evil-obsidian-sync"
       - "traefik.http.routers.obsidian-sync.entrypoints=websecure"
       - "traefik.http.routers.obsidian-sync.tls.certresolver=letsencrypt"
       - "traefik.http.services.obsidian-sync.loadbalancer.server.port=5984"
+      - "traefik.http.routers.obsidian-livesync.middlewares=obsidiancors"
+      # The part needed for CORS to work on Traefik 2.x starts here
+      - "traefik.http.middlewares.obsidiancors.headers.accesscontrolallowmethods=GET,PUT,POST,HEAD,DELETE"
+      - "traefik.http.middlewares.obsidiancors.headers.accesscontrolallowheaders=accept,authorization,content-type,origin,referer"
+      - "traefik.http.middlewares.obsidiancors.headers.accesscontrolalloworiginlist=app://obsidian.md,capacitor://localhost,http://localhost"
+      - "traefik.http.middlewares.obsidiancors.headers.accesscontrolmaxage=3600"
+      - "traefik.http.middlewares.obsidiancors.headers.addvaryheader=true"
+      - "traefik.http.middlewares.obsidiancors.headers.accessControlAllowCredentials=true"
 
 networks:
   evilnet:
