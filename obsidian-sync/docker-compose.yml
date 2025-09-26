@@ -2,7 +2,7 @@ services:
   obsidian-sync:
     env_file:
       - stack.env
-    image: couchdb:latest:3
+    image: couchdb:3
     container_name: evil-obsidian-sync
     user: 5984:5984
     volumes:
