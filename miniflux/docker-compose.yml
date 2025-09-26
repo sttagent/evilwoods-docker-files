@@ -10,8 +10,10 @@ services:
     volumes:
       - /mnt/storage/containers/service-data/miniflux/volumes/secrets:/secrets:ro
     networks:
-      - evilnet
-      - miniflux
+      evilnet:
+        priority: 1000
+      miniflux:
+        priority: 100
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=evilnet"
@@ -40,3 +42,4 @@ networks:
   evilnet:
     external: true
   miniflux:
+    internal: true
