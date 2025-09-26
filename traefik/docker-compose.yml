@@ -23,7 +23,6 @@ services:
       - "traefik.http.routers.dashboard.rule=Host(`traefik.evilwoods.net`)"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.routers.dashboard.tls=true"
       - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.dashboard.tls.domains[0].main=evilwoods.net"
       - "traefik.http.routers.dashboard.tls.domains[0].sans=*.evilwoods.net"

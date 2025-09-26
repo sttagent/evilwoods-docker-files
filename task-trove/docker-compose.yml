@@ -13,7 +13,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.tasktrove.rule=Host(`tasks.evilwoods.net`)"
       - "traefik.http.routers.tasktrove.entrypoints=websecure"
-      - "traefik.http.routers.tasktrove.tls=true"
       - "traefik.http.routers.tasktrove.tls.certresolver=letsencrypt"
       - "traefik.http.routers.tasktrove.tls.domains[0].main=evilwoods.net"
       - "traefik.http.routers.tasktrove.tls.domains[0].sans=*.evilwoods.net"
