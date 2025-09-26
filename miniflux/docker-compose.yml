@@ -21,7 +21,7 @@ services:
       - "traefik.http.services.miniflux.loadbalancer.server.port=8080"
 
   miniflux-db:
-    image: postgres:18-alpine
+    image: postgres:17-alpine
     container_name: evil-miniflux-db
     environment:
       - POSTGRES_USER=miniflux
