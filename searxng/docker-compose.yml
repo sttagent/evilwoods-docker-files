@@ -35,6 +35,7 @@ services:
         max-file: "1"
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=evilnet"
       - "traefik.http.routers.searxng.rule=Host(`search.evilwoods.net`)"
       - "traefik.http.routers.searxng.entrypoints=websecure"
       - "traefik.http.routers.searxng.tls.certresolver=letsencrypt"
