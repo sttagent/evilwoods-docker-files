@@ -1,0 +1,9 @@
+{
+  "openId": {
+    "discoveryURL": "hhtps://id.evilwoods.net/.well-known/openid-configuration",
+    "client_id": "",
+    "client_secret": "",
+    "server_hostname": "https://actual.evilwoods.net",
+    "authMethod": "openid"
+  }
+}

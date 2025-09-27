@@ -1,0 +1,30 @@
+services:
+  actual_server:
+    env_file:
+      - stack.env
+    container_name: evil-actual
+    image: docker.io/actualbudget/actual-server:25.9.0-alpine
+    volumes:
+      - /mnt/storage/containers/service-data/actual/volumes/data:/data
+    networks:
+      - evilnet
+    extra_hosts:
+      - "id.evilwoods.net:host-gateway"
+    healthcheck:
+      test: ["CMD-SHELL", "node src/scripts/health-check.js"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=evilnet"
+      - "traefik.http.routers.actual.rule=Host(`actual.evilwoods.net`)"
+      - "traefik.http.routers.actual.entrypoints=websecure"
+      - "traefik.http.routers.actual.tls.certresolver=letsencrypt"
+      - "traefik.http.services.actual.loadbalancer.server.port=5006"
+
+networks:
+  evilnet:
+    external: true
