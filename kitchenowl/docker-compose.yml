@@ -10,6 +10,8 @@ services:
       - /mnt/storage/containers/service-data/kitchenowl/volumes/secrets:/secrets:ro
     networks:
       - evilnet
+    extra_hosts:
+      - "id.evilwoods.net:host-gateway"
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=evilnet"
