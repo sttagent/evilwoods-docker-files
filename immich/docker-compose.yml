@@ -1,0 +1,88 @@
+services:
+  immich-server:
+    container_name: portainer-immich-server
+    image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
+    # extends:
+    #   file: hwaccel.transcoding.yml
+    #   service: cpu # set to one of [nvenc, quicksync, rkmpp, vaapi, vaapi-wsl] for accelerated transcoding
+    volumes:
+      # Do not edit the next line. If you want to change the media storage location on your system, edit the value of UPLOAD_LOCATION in the .env file
+      - ${UPLOAD_LOCATION}:/data
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - stack.env
+    depends_on:
+      - immich-valkey
+      - immitch-database
+    networks:
+      - evilnet
+      - immich
+    extra_hosts:
+      - "id.evilwoods.net:host-gateway"
+    restart: unless-stopped
+    healthcheck:
+      disable: false
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=evilnet"
+      - "traefik.http.routers.immich-server.rule=Host(`immich.evilwoods.net`)"
+      - "traefik.http.routers.immich-server.entrypoints=websecure"
+      - "traefik.http.routers.immich-server.tls.certresolver=letsencrypt"
+      - "traefik.http.services.immich-server.loadbalancer.server.port=2283"
+
+  immich-machine-learning:
+    container_name: portainer-immich-machine-learning
+    # For hardware acceleration, add one of -[armnn, cuda, rocm, openvino, rknn] to the image tag.
+    # Example tag: ${IMMICH_VERSION:-release}-cuda
+    image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}-rocm
+    # extends: # uncomment this section for hardware acceleration - see https://immich.app/docs/features/ml-hardware-acceleration
+    #   file: hwaccel.ml.yml
+    #   service: cpu # set to one of [armnn, cuda, rocm, openvino, openvino-wsl, rknn] for accelerated inference - use the `-wsl` version for WSL2 where applicable
+    volumes:
+      - portainer-immich-model-cache:/cache
+    networks:
+      - immich
+    env_file:
+      - stack.env
+    restart: unless-stopped
+    healthcheck:
+      disable: false
+
+  immich-valkey:
+    container_name: portainer-immich-valkey
+    image: docker.io/valkey/valkey:8-alpine
+    volumes:
+      - portainer-immich-valkey-data:/data
+    networks:
+      - immich
+    healthcheck:
+      test: redis-cli ping || exit 1
+    restart: unless-stopped
+
+  immitch-database:
+    container_name: portainer-immich-postgresdb
+    image: ghcr.io/immich-app/postgres:17-vectorchord0.4.2-pgvectors0.3.0
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_DB: ${DB_DATABASE_NAME}
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+      # Uncomment the DB_STORAGE_TYPE: 'HDD' var if your database isn't stored on SSDs
+      DB_STORAGE_TYPE: "HDD"
+    volumes:
+      # Do not edit the next line. If you want to change the database storage location on your system, edit the value of DB_DATA_LOCATION in the .env file
+      - ${DB_DATA_LOCATION}:/var/lib/postgresql/data
+    networks:
+      - immich
+    shm_size: 128mb
+    restart: unless-stopped
+
+volumes:
+  portainer-immich-model-cache:
+  portainer-immich-valkey-data:
+
+networks:
+  evilnet:
+    external: true
+  immich:
+    internal: true
