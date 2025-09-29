@@ -1,0 +1,28 @@
+http:
+  routers:
+    nas:
+      rule: Host(`nas.evilwoods.net`)
+      service: nas
+      entryPoints: websecure
+      tls:
+        certResolver: letsencrypt
+    portainer:
+      rule: Host(`portainer.evilwoods.net`)
+      service: portainer
+      entryPoints: websecure
+      tls:
+        certResolver: letsencrypt
+  services:
+    nas:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.1.2:8443"
+        serversTransport: insecure-transport
+    portainer:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.1.2:31015"
+        serversTransport: insecure-transport
+  serversTransports:
+    insecure-transport:
+      insecureSkipVerify: true
