@@ -3,7 +3,7 @@ services:
     env_file:
       - stack.env
     container_name: evil-actual
-    image: docker.io/actualbudget/actual-server:25.9.0-alpine
+    image: docker.io/actualbudget/actual-server:25.10.0-alpine
     volumes:
       - /mnt/storage/containers/service-data/actual/volumes/data:/data
     networks:
