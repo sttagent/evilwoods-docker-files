@@ -17,6 +17,8 @@ services:
     networks:
       - evilnet
       - immich
+    devices:
+      - /dev/dri:/dev/dri
     extra_hosts:
       - "id.evilwoods.net:host-gateway"
     restart: unless-stopped
@@ -34,15 +36,10 @@ services:
     container_name: portainer-immich-machine-learning
     # For hardware acceleration, add one of -[armnn, cuda, rocm, openvino, rknn] to the image tag.
     # Example tag: ${IMMICH_VERSION:-release}-cuda
-    image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}-rocm
+    image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
     # extends: # uncomment this section for hardware acceleration - see https://immich.app/docs/features/ml-hardware-acceleration
     #   file: hwaccel.ml.yml
     #   service: cpu # set to one of [armnn, cuda, rocm, openvino, openvino-wsl, rknn] for accelerated inference - use the `-wsl` version for WSL2 where applicable
-    group_add:
-      - video
-    devices:
-      - /dev/dri:/dev/dri
-      - /dev/kfd:/dev/kfd
     volumes:
       - portainer-immich-model-cache:/cache
     networks:
