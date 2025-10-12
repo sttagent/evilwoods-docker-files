@@ -1,0 +1,64 @@
+services:
+  paperless-valkey:
+    image: docker.io/library/valkey:8
+    container_name: portainer-paperless-valkey
+    restart: unless-stopped
+    volumes:
+      - /mnt/storage/containers/service-data/paperless/volumes/cache:/data
+    networks:
+      - paperless
+
+  paperless-db:
+    image: docker.io/library/postgres:17
+    container_name: portainer-paperless-db
+    restart: unless-stopped
+    volumes:
+      - /mnt/storage/containers/service-data/paperless/volumes/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: paperless
+      POSTGRES_USER: paperless
+      POSTGRES_PASSWORD: paperless
+    networks:
+      - paperless
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "paperless"]
+      interval: 10s
+      start_period: 30s
+
+  paperless:
+    env_file:
+      - stack.env
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    container_name: portainer-paperless
+    restart: unless-stopped
+    depends_on:
+      paperless-db:
+        condition: service_healthy
+      paperless-valkey:
+        condition: service_started
+    volumes:
+      - /mnt/storage/containers/service-data/paperless/volumes/data:/usr/src/paperless/data
+      - /mnt/storage/containers/service-data/paperless/volumes/media:/usr/src/paperless/media
+      - /mnt/storage/containers/service-data/paperless/volumes/export:/usr/src/paperless/export
+      - /mnt/storage/containers/service-data/paperless/volumes/consume:/usr/src/paperless/consume
+    environment:
+      PAPERLESS_REDIS: redis://paperless-valkey:6379
+      PAPERLESS_DBHOST: paperless-db
+    networks:
+      - evilnet
+      - paperless
+    extra_hosts:
+      - "id.evilwoods.net:host-gateway"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=evilnet"
+      - "traefik.http.routers.paperless.rule=Host(`paperless.evilwoods.net`)"
+      - "traefik.http.routers.paperless.entrypoints=websecure"
+      - "traefik.http.routers.paperless.tls.certresolver=letsencrypt"
+      - "traefik.http.services.paperless.loadbalancer.server.port=8000"
+
+networks:
+  evilnet:
+    external: true
+  paperless:
+    internal: true
