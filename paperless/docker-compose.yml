@@ -1,10 +1,10 @@
 services:
   paperless-valkey:
-    image: docker.io/library/valkey:8
+    image: docker.io/valkey/valkey:8
     container_name: portainer-paperless-valkey
     restart: unless-stopped
     volumes:
-      - /mnt/storage/containers/service-data/paperless/volumes/cache:/data
+      - portainer-paperless-valkey-data:/data
     networks:
       - paperless
 
@@ -13,7 +13,7 @@ services:
     container_name: portainer-paperless-db
     restart: unless-stopped
     volumes:
-      - /mnt/storage/containers/service-data/paperless/volumes/data:/var/lib/postgresql/data
+      - /mnt/storage/containers/service-data/paperless/volumes/db:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: paperless
       POSTGRES_USER: paperless
@@ -28,8 +28,8 @@ services:
   paperless:
     env_file:
       - stack.env
-    image: ghcr.io/paperless-ngx/paperless-ngx:latest
-    container_name: portainer-paperless
+    image: ghcr.io/paperless-ngx/paperless-ngx:2.18
+    container_name: portainer-paperless-server
     restart: unless-stopped
     depends_on:
       paperless-db:
@@ -42,8 +42,8 @@ services:
       - /mnt/storage/containers/service-data/paperless/volumes/export:/usr/src/paperless/export
       - /mnt/storage/containers/service-data/paperless/volumes/consume:/usr/src/paperless/consume
     environment:
-      PAPERLESS_REDIS: redis://paperless-valkey:6379
-      PAPERLESS_DBHOST: paperless-db
+      PAPERLESS_REDIS: redis://portainer-paperless-valkey:6379
+      PAPERLESS_DBHOST: portainer-paperless-db
     networks:
       - evilnet
       - paperless
@@ -62,3 +62,6 @@ networks:
     external: true
   paperless:
     internal: true
+
+volumes:
+  portainer-paperless-valkey-data:
