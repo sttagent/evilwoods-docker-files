@@ -1,6 +1,6 @@
 services:
   jellyfin:
-    image: jellyfin/jellyfin:10.10
+    image: jellyfin/jellyfin:10.11
     container_name: portainer-jellyfin
     user: 0:0
     volumes:
