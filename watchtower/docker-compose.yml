@@ -4,6 +4,7 @@ services:
     environment:
       WATCHTOWER_SCHEDULE: "0 0 4 * * *"
       WATCHTOWER_ROLLING_RESTART: "true"
+      WATCHTOWER_ClEANUP: "true"
     container_name: portainer-watchtower
     image: containrrr/watchtower
     volumes:
