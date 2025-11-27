@@ -28,7 +28,7 @@ services:
   paperless:
     env_file:
       - stack.env
-    image: ghcr.io/paperless-ngx/paperless-ngx:2.18
+    image: ghcr.io/paperless-ngx/paperless-ngx:2.20
     container_name: portainer-paperless-server
     restart: unless-stopped
     depends_on:
